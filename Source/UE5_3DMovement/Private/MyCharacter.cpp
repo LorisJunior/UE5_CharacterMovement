@@ -1,34 +1,88 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include <Math/RotationMatrix.h>
+#include <Math/MathFwd.h>
 
-// Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Camera Setup
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
+	CameraBoom->SetupAttachment(GetRootComponent());
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(FName("ViewCamera"));
+	ViewCamera->SetupAttachment(CameraBoom);
+
+	// Character Rotation
+
+	bUseControllerRotationYaw = false;
+	CameraBoom->bUsePawnControlRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 }
 
-// Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Axis
+
+	PlayerInputComponent->BindAxis(FName("MoveForward"), this, &AMyCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &AMyCharacter::MoveRight);
+	PlayerInputComponent->BindAxis(FName("LookUp"), this, &AMyCharacter::LookUp);
+	PlayerInputComponent->BindAxis(FName("Turn"), this, &AMyCharacter::Turn);
+
+	// Actions
+
+	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Pressed, this, &AMyCharacter::MouseRightClickPressed);
+	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Released, this, &AMyCharacter::MouseRightClickReleased);
+	PlayerInputComponent->BindAction(FName("Jump"), EInputEvent::IE_Released, this, &ACharacter::Jump);
+}
+
+void AMyCharacter::MoveForward(float Value)
+{
+	FVector Direction = FRotationMatrix(FRotator(0.f, GetControlRotation().Yaw, 0.f)).GetUnitAxis(EAxis::X);
+	AddMovementInput(Direction, Value);
+}
+
+void AMyCharacter::MoveRight(float Value)
+{
+	FVector Direction = FRotationMatrix(FRotator(0.f, GetControlRotation().Yaw, 0.f)).GetUnitAxis(EAxis::Y);
+	AddMovementInput(Direction, Value);
+}
+
+void AMyCharacter::LookUp(float Value)
+{
+	AddControllerPitchInput(Value);
+}
+
+void AMyCharacter::Turn(float Value)
+{
+	AddControllerYawInput(Value);
+}
+
+void AMyCharacter::MouseRightClickPressed()
+{
+	bUseControllerRotationYaw = true;
+}
+
+void AMyCharacter::MouseRightClickReleased()
+{
+	bUseControllerRotationYaw = false;
 }
 
