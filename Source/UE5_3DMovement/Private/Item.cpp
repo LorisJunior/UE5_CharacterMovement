@@ -1,6 +1,7 @@
 
 #include "Item.h"
 #include "Components/SphereComponent.h"
+#include "MyCharacter.h"
 
 AItem::AItem()
 {
@@ -8,10 +9,10 @@ AItem::AItem()
 
 	// Components
 
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("Mesh"));
-	Mesh->SetupAttachment(GetRootComponent());
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMesh"));
+	StaticMesh->SetupAttachment(GetRootComponent());
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(FName("Sphere Collision"));
-	SphereCollision->SetupAttachment(Mesh);
+	SphereCollision->SetupAttachment(StaticMesh);
 }
 
 void AItem::BeginPlay()
@@ -26,7 +27,10 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AddActorWorldOffset(FVector(0.f, 0.f, SinOscillation(DeltaTime)));
+	if (canOscilate)
+	{
+		AddActorWorldOffset(FVector(0.f, 0.f, SinOscillation(DeltaTime)));
+	}
 }
 
 float AItem::SinOscillation(float DeltaTime)
@@ -38,20 +42,21 @@ float AItem::SinOscillation(float DeltaTime)
 
 void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GEngine)
+	AMyCharacter* Character = Cast<AMyCharacter>(OtherActor);
+
+	if (Character)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Green, FString(TEXT("Entrou")));
+		Character->SetOverlapingItem(this);
+		canOscilate = false;
 	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (GEngine)
+	AMyCharacter* Character = Cast<AMyCharacter>(OtherActor);
+
+	if (Character)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Red, FString(TEXT("Saiu!")));
+		Character->SetOverlapingItem(nullptr);
 	}
 }
-
-
-
-

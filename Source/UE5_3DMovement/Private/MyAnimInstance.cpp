@@ -8,6 +8,7 @@
 void UMyAnimInstance::NativeInitializeAnimation()
 {
 	Character = Cast<AMyCharacter>(TryGetPawnOwner());
+
 	if (Character)
 	{
 		CharacterMovement = Character->GetCharacterMovement();
@@ -20,5 +21,6 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		GroundSpeed = CharacterMovement->Velocity.Size2D();
 		isJumping = CharacterMovement->IsFalling();
+		CharacterState = Character->GetCharacterState();
 	}
 }

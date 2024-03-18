@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Math/RotationMatrix.h>
 #include <Math/MathFwd.h>
+#include <Weapon.h>
 
 AMyCharacter::AMyCharacter()
 {
@@ -51,6 +52,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Pressed, this, &AMyCharacter::MouseRightClickPressed);
 	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Released, this, &AMyCharacter::MouseRightClickReleased);
+	PlayerInputComponent->BindAction(FName("Equip"), EInputEvent::IE_Pressed, this, &AMyCharacter::EKeyPressed);
 	PlayerInputComponent->BindAction(FName("Jump"), EInputEvent::IE_Released, this, &ACharacter::Jump);
 }
 
@@ -84,5 +86,19 @@ void AMyCharacter::MouseRightClickPressed()
 void AMyCharacter::MouseRightClickReleased()
 {
 	bUseControllerRotationYaw = false;
+}
+
+void AMyCharacter::EKeyPressed()
+{
+	if (OverlapingItem)
+	{
+		AWeapon* Weapon = Cast<AWeapon>(OverlapingItem);
+
+		if (Weapon)
+		{
+			Weapon->Equip(GetMesh(), FName("hand_rSocket"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		}
+	}
 }
 

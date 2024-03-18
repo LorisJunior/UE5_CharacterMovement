@@ -11,5 +11,6 @@ public class UE5_3DMovementEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 
 		ExtraModuleNames.AddRange( new string[] { "UE5_3DMovement" } );
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
 	}
 }

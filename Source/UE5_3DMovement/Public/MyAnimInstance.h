@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "CharacterTypes.h"
 #include "MyAnimInstance.generated.h"
 
 class UCharacterMovementComponent;
@@ -17,18 +18,21 @@ class UE5_3DMOVEMENT_API UMyAnimInstance : public UAnimInstance
 
 
 public:	
+
 	void NativeInitializeAnimation() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	 UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly)
 	float GroundSpeed;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool isJumping;
 
+	UPROPERTY(BlueprintReadOnly)
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
 private:
+
 	UCharacterMovementComponent* CharacterMovement;
 	AMyCharacter* Character;
-
-
-	
 };
