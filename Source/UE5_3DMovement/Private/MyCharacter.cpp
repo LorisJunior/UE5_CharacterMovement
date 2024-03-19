@@ -31,6 +31,8 @@ void AMyCharacter::BeginPlay()
 	
 }
 
+
+
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -53,8 +55,11 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Pressed, this, &AMyCharacter::MouseRightClickPressed);
 	PlayerInputComponent->BindAction(FName("MouseRightClick"), EInputEvent::IE_Released, this, &AMyCharacter::MouseRightClickReleased);
 	PlayerInputComponent->BindAction(FName("Equip"), EInputEvent::IE_Pressed, this, &AMyCharacter::EKeyPressed);
+	PlayerInputComponent->BindAction(FName("Attack"), EInputEvent::IE_Pressed, this, &AMyCharacter::Attack);
 	PlayerInputComponent->BindAction(FName("Jump"), EInputEvent::IE_Released, this, &ACharacter::Jump);
 }
+
+#pragma region Input Actions
 
 void AMyCharacter::MoveForward(float Value)
 {
@@ -99,6 +104,32 @@ void AMyCharacter::EKeyPressed()
 			Weapon->Equip(GetMesh(), FName("hand_rSocket"));
 			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		}
+	}
+}
+
+void AMyCharacter::Attack()
+{
+	if (CanAttack())
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+bool AMyCharacter::CanAttack()
+{
+	return ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped;
+}
+
+#pragma endregion
+
+void AMyCharacter::PlayAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage, 1.3f);
 	}
 }
 

@@ -31,7 +31,17 @@ public:
 	void MouseRightClickPressed();
 	void MouseRightClickReleased();
 	void EKeyPressed();
+	void Attack();
 
+	bool CanAttack();
+
+	// Animation Montage
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AttackMontage = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 protected:
 
@@ -47,11 +57,18 @@ protected:
 
 private:
 
+	// States
+
 	UPROPERTY(VisibleAnywhere)
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
+
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlapingItem = nullptr;
+
+	// Animation
+
+	void PlayAttackMontage();
 
 public:
 

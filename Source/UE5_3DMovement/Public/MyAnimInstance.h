@@ -15,8 +15,6 @@ class UE5_3DMOVEMENT_API UMyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
-
-
 public:	
 
 	void NativeInitializeAnimation() override;
@@ -31,8 +29,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
+	UPROPERTY(BlueprintReadOnly)
+	AMyCharacter* Character;
+
 private:
 
 	UCharacterMovementComponent* CharacterMovement;
-	AMyCharacter* Character;
 };
